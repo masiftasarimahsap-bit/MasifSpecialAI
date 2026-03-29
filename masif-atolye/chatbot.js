@@ -23,7 +23,7 @@ MARKA BİLGİSİ:
 - Tüm ürünler el yapımıdır, seri üretim yoktur.
 - Kişiselleştirme (isim, logo, tarih oyma) mevcut.
 - WhatsApp: +90 506 778 68 85
-- Website: www.masifspecial.shop
+- Website: www.masifspecial.com
 - Türkiye genelinde kargo yapılmaktadır.
 - Fiyatlar ürün ve kişiselleştirmeye göre değişir; kesin fiyat için WhatsApp'tan iletişim kurulması gerekir.
 
