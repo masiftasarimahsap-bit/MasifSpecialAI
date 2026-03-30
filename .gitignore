@@ -1,6 +1,9 @@
 # Next.js source - only built output (masif-sistem/) is tracked
 Otomasyon /
 
+# Kaynak görsel klasörleri (işlenmiş görseller images/ altında)
+"masif-atolye/Duvar saatleri/"
+
 # macOS
 .DS_Store
 **/.DS_Store
