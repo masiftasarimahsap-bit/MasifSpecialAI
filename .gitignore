@@ -15,3 +15,8 @@ CLAUDE.md
 
 # Misc
 *.log
+node_modules/
+fal-output/
+fal-test.mjs
+package.json
+package-lock.json
