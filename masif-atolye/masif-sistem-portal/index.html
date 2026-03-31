@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>masif. sistem | Sektör Seçimi</title>
+    <meta name="description" content="masif. sistem ile sağlık profesyonelleri ve özel firmalar için sektöre özel dijital otomasyon ve yazılım çözümleri.">
+    <meta name="robots" content="noindex">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/portal.css">
+    <style>
+        .back-link {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-fast);
+            z-index: 10;
+            opacity: 0;
+            animation: fade-in 1s 0.4s forwards ease-out;
+        }
+        .back-link:hover { color: var(--text-primary); }
+        .back-link svg { width: 13px; height: 13px; }
+
+        .sistem-badge {
+            display: inline-block;
+            font-family: var(--font-body);
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #8ab4d4;
+            border: 1px solid rgba(138, 180, 212, 0.25);
+            padding: 0.3rem 1rem;
+            margin-bottom: 1.2rem;
+            border-radius: 1px;
+            opacity: 0;
+            animation: fade-in 1s 0.5s forwards ease-out;
+        }
+    </style>
+</head>
+<body>
+    <a href="/portal.html" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Ana Portal
+    </a>
+
+    <div class="portal-container">
+        <span class="sistem-badge">masif. sistem</span>
+        <h1 class="masif-logo">
+            <span style="position: absolute; width:1px; height:1px; overflow:hidden;">Masif Sistem - Dijital Otomasyon Çözümleri</span>
+            masif<span>.</span>
+        </h1>
+
+        <p class="subtitle">Sektörünüzü Seçin</p>
+
+        <div class="portal-actions">
+            <!-- Masif Klinik -->
+            <a href="/masif-sistem/" class="portal-btn brand-otomasyon">
+                <div class="btn-content">
+                    <span class="btn-subtitle">Sağlık Profesyonelleri İçin</span>
+                    <span class="btn-title">masif. klinik</span>
+                </div>
+                <div class="hover-glow"></div>
+            </a>
+
+            <!-- Masif Ticaret -->
+            <a href="/masif-ticaret/" class="portal-btn brand-ticaret">
+                <div class="btn-content">
+                    <span class="btn-subtitle">Üretici & E-Ticaret Firmaları İçin</span>
+                    <span class="btn-title">masif. ticaret</span>
+                </div>
+                <div class="hover-glow"></div>
+            </a>
+        </div>
+
+        <p class="portal-footer">&copy; 2026 masif. &mdash; masifspecial.com</p>
+    </div>
+</body>
+</html>

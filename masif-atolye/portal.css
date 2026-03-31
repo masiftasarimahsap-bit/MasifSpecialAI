@@ -1,0 +1,264 @@
+:root {
+    --bg-color: #050505;
+    --text-primary: #f8f6f2; /* Soft white/beige */
+    --text-secondary: #99938b;
+    --accent: #d3b482; /* Warm gold/wood tone */
+    --accent-hover: #e6cfa3;
+    
+    --font-heading: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+    
+    --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    /* Optional grain effect via a faint radial gradient masking */
+}
+
+/* Subtle background vignette */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at center, rgba(30, 28, 26, 0.4) 0%, rgba(5, 5, 5, 1) 80%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.portal-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 1300px;
+    width: 100%;
+}
+
+/* BLINKING LOGO */
+.masif-logo {
+    font-family: var(--font-heading);
+    font-size: 5rem;
+    font-weight: 300;
+    letter-spacing: -2px;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    animation: slow-blink 3s infinite alternate ease-in-out;
+}
+
+.masif-logo span {
+    color: var(--accent);
+}
+
+@keyframes slow-blink {
+    0% {
+        opacity: 0.4;
+        text-shadow: 0 0 10px rgba(248, 246, 242, 0.05);
+    }
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 20px rgba(248, 246, 242, 0.3), 0 0 40px rgba(211, 180, 130, 0.2);
+    }
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 4rem;
+    opacity: 0;
+    animation: fade-in 1.5s 0.8s forwards ease-out;
+}
+
+@keyframes fade-in {
+    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(15px); }
+}
+
+/* BUTTONS */
+.portal-actions {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fade-in 1.5s 1.2s forwards ease-out;
+}
+
+.portal-btn {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem 2rem;
+    min-width: 300px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2px; /* Sharp elegant edges */
+    backdrop-filter: blur(10px);
+    transition: var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.btn-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    transition: var(--transition-fast);
+}
+
+.btn-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--text-primary);
+    font-weight: 300;
+    transition: var(--transition-fast);
+}
+
+/* Glowing decorative hover effect */
+.hover-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(211, 180, 130, 0.15) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1), height 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.portal-btn:hover {
+    border-color: rgba(211, 180, 130, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.portal-btn:hover .hover-glow {
+    width: 400px;
+    height: 400px;
+}
+
+.portal-btn:hover .btn-subtitle {
+    color: var(--accent);
+}
+
+.portal-btn:hover .btn-title {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Subtle line above buttons on hover */
+.portal-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: var(--accent);
+    transition: width 0.5s ease;
+    z-index: 3;
+}
+
+.portal-btn:hover::after {
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .portal-actions {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .portal-btn {
+        min-width: 100%;
+    }
+}
+
+/* Portal footer */
+.portal-footer {
+    margin-top: 4rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fade-in 1.5s 1.6s forwards ease-out;
+}
+
+/* ===== BRAND-SPECIFIC COLORS ===== */
+
+/* brand-masif: warm gold (default, no override needed) */
+
+/* brand-otomasyon: steel blue */
+.brand-otomasyon .hover-glow {
+    background: radial-gradient(circle, rgba(138, 180, 212, 0.15) 0%, transparent 70%);
+}
+.brand-otomasyon::after {
+    background-color: #8ab4d4;
+}
+.brand-otomasyon:hover {
+    border-color: rgba(138, 180, 212, 0.3);
+}
+.brand-otomasyon:hover .btn-subtitle {
+    color: #8ab4d4;
+}
+
+/* brand-ticaret: warm orange */
+.brand-ticaret .hover-glow {
+    background: radial-gradient(circle, rgba(211, 146, 91, 0.15) 0%, transparent 70%);
+}
+.brand-ticaret::after {
+    background-color: #d3925b;
+}
+.brand-ticaret:hover {
+    border-color: rgba(211, 146, 91, 0.3);
+}
+.brand-ticaret:hover .btn-subtitle {
+    color: #d3925b;
+}
+
+@media (max-width: 768px) {
+    .masif-logo {
+        font-size: 4rem;
+    }
+    .subtitle {
+        margin-bottom: 3rem;
+    }
+    .portal-btn {
+        padding: 2.5rem 2rem;
+    }
+    .btn-title {
+        font-size: 1.6rem;
+    }
+}
