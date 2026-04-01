@@ -1,2 +1,2 @@
-:HL["/masif-sistem/_next/static/chunks/0..11-of8kit0.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"jFfFRntSSCzyr4HIQkGQp"}
+:HL["/_next/static/chunks/06lgzstp4laic.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"z6zRfX6CtBQ0_NbxT0aAe"}
