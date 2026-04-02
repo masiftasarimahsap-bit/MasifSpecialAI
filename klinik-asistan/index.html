@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>masif. klinik | AI Danışman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #070b12;
+      --surface:     #0d1422;
+      --surface-2:   #111c2e;
+      --border:      rgba(99,154,210,0.12);
+      --accent:      #3b82f6;
+      --accent-glow: rgba(59,130,246,0.15);
+      --accent-2:    #0ea5e9;
+      --text:        #e8eef6;
+      --text-muted:  #607899;
+      --bot-bubble:  #111c2e;
+      --user-bubble: #1d3560;
+      --gold:        #c9a26c;
+      --radius:      14px;
+      --font-head:   'Fraunces', serif;
+      --font-body:   'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .chat-header {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .header-info { flex: 1; }
+
+    .header-info .brand {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .header-info .brand span { color: var(--accent-2); }
+
+    .header-info .status {
+      font-size: 0.68rem;
+      color: #4ade80;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Chat wrapper ── */
+    .chat-wrap {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      height: min(700px, 92dvh);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(59,130,246,0.06);
+    }
+
+    /* ── Messages ── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Bubbles */
+    .msg { display: flex; gap: 10px; animation: fadeUp 0.25s ease; max-width: 88%; }
+    .msg.bot  { align-self: flex-start; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .bubble {
+      padding: 11px 15px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 100%;
+    }
+
+    .bot  .bubble { background: var(--bot-bubble); border: 1px solid var(--border); border-top-left-radius: 4px; }
+    .user .bubble { background: var(--user-bubble); border-top-right-radius: 4px; }
+
+    /* Quick reply buttons */
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 4px 0 6px 40px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .qr-btn {
+      background: transparent;
+      border: 1px solid rgba(59,130,246,0.35);
+      color: var(--accent-2);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .qr-btn:hover {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .qr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Typing indicator */
+    .typing {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      animation: fadeUp 0.2s ease;
+    }
+    .typing-dots {
+      display: flex;
+      gap: 5px;
+      background: var(--bot-bubble);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 16px;
+      border-top-left-radius: 4px;
+    }
+    .typing-dots span {
+      width: 6px; height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* Lead form */
+    .lead-form-wrap {
+      padding: 4px 0 6px 40px;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .lead-form {
+      background: var(--surface-2);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+
+    .lead-form p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .lead-form-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-2);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .lead-form input {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .lead-form input:focus { border-color: var(--accent); }
+    .lead-form input::placeholder { color: var(--text-muted); }
+
+    .lead-submit {
+      background: linear-gradient(to right, #1d4ed8, #0ea5e9);
+      border: none;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .lead-submit:hover { opacity: 0.88; }
+    .lead-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Input area ── */
+    .input-area {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--surface);
+    }
+
+    .text-input {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 11px 16px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+      line-height: 1.5;
+      transition: border-color 0.2s;
+    }
+    .text-input:focus { border-color: rgba(59,130,246,0.4); }
+    .text-input::placeholder { color: var(--text-muted); }
+
+    .send-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .send-btn:hover:not(:disabled) { opacity: 0.88; transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Dev panel ── */
+    .dev-panel {
+      position: fixed;
+      bottom: 12px; right: 12px;
+      background: rgba(7,11,18,0.95);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex; gap: 12px;
+      z-index: 100;
+    }
+    .dev-panel a {
+      color: var(--accent-2);
+      text-decoration: none;
+    }
+    .dev-panel a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="chat-wrap">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="avatar">🏥</div>
+    <div class="header-info">
+      <div class="brand">masif<span>.</span> klinik</div>
+      <div class="status"><span class="status-dot"></span>AI Danışman Aktif</div>
+    </div>
+    <button class="reset-btn" onclick="resetChat()">Yeni Sohbet</button>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages" id="messages"></div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <textarea
+      class="text-input"
+      id="userInput"
+      placeholder="Mesajınızı yazın..."
+      rows="1"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"
+    ></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Gönder">
+      ➤
+    </button>
+  </div>
+</div>
+
+<!-- Dev panel -->
+<div class="dev-panel">
+  <span>localhost:3000</span>
+  <a href="/api/leads" target="_blank">Leads ↗</a>
+</div>
+
+<script>
+  // ──────────────────────────────────
+  // State
+  // ──────────────────────────────────
+  let history = []           // Claude messages array
+  let isLoading = false
+  let currentProfession = ''
+  let pendingLeadReason = ''
+
+  const messagesEl = document.getElementById('messages')
+  const inputEl    = document.getElementById('userInput')
+  const sendBtn    = document.getElementById('sendBtn')
+
+  // ──────────────────────────────────
+  // Init: ilk karşılama
+  // ──────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    startConversation()
+  })
+
+  async function startConversation() {
+    // Claude'u sıfırla ve ilk mesajı al
+    history = []
+    await sendToBot('Merhaba, sohbeti başlat.')
+  }
+
+  function resetChat() {
+    messagesEl.innerHTML = ''
+    history = []
+    currentProfession = ''
+    pendingLeadReason = ''
+    startConversation()
+  }
+
+  // ──────────────────────────────────
+  // Send user message
+  // ──────────────────────────────────
+  async function sendMessage(text) {
+    const msg = (text ?? inputEl.value).trim()
+    if (!msg || isLoading) return
+
+    if (!text) {
+      inputEl.value = ''
+      inputEl.style.height = ''
+    }
+
+    appendUserBubble(msg)
+    history.push({ role: 'user', content: msg })
+    disableButtons()
+    await sendToBot()
+  }
+
+  // ──────────────────────────────────
+  // API call
+  // ──────────────────────────────────
+  async function sendToBot(inject) {
+    isLoading = true
+    sendBtn.disabled = true
+
+    // Eğer inject varsa (ilk mesaj gibi), history'e ekle
+    if (inject) {
+      history.push({ role: 'user', content: inject })
+    }
+
+    const typingEl = appendTyping()
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history })
+      })
+
+      if (!res.ok) throw new Error('Sunucu hatası')
+      const data = await res.json()
+
+      typingEl.remove()
+
+      // Bot mesajını history'e ekle
+      const rawText = data.text || 'Bir hata oluştu.'
+      history.push({ role: 'assistant', content: JSON.stringify(data) })
+
+      // Mesleği yakala
+      detectProfession(rawText)
+
+      // Bubble + butonlar
+      appendBotBubble(rawText)
+
+      if (data.collectLead) {
+        pendingLeadReason = data.leadReason || 'Ücretsiz Danışmanlık'
+        appendLeadForm(pendingLeadReason)
+      } else if (data.buttons?.length) {
+        appendButtons(data.buttons)
+      }
+
+    } catch (err) {
+      typingEl.remove()
+      appendBotBubble('Bağlantı hatası oluştu. Lütfen sayfayı yenileyin.')
+    } finally {
+      isLoading = false
+      sendBtn.disabled = false
+    }
+  }
+
+  // ──────────────────────────────────
+  // DOM helpers
+  // ──────────────────────────────────
+  function appendBotBubble(text) {
+    const wrap = document.createElement('div')
+    wrap.className = 'msg bot'
+    wrap.innerHTML = `
+      <div class="msg-avatar">🤖</div>
+      <div class="bubble">${escHtml(text)}</div>
+    `
+    messagesEl.appendChild(wrap)
+    scrollBottom()
+    return wrap
+  }
+
+  function appendUserBubble(text) {
+    const wrap = document.createElement('div')
+    wrap.className = 'msg user'
+    wrap.innerHTML = `<div class="bubble">${escHtml(text)}</div>`
+    messagesEl.appendChild(wrap)
+    scrollBottom()
+  }
+
+  function appendTyping() {
+    const wrap = document.createElement('div')
+    wrap.className = 'typing msg bot'
+    wrap.innerHTML = `
+      <div class="msg-avatar">🤖</div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    `
+    messagesEl.appendChild(wrap)
+    scrollBottom()
+    return wrap
+  }
+
+  function appendButtons(btns) {
+    const row = document.createElement('div')
+    row.className = 'buttons-row'
+    btns.forEach(label => {
+      const btn = document.createElement('button')
+      btn.className = 'qr-btn'
+      btn.textContent = label
+      btn.onclick = () => {
+        disableButtons()
+        sendMessage(label)
+      }
+      row.appendChild(btn)
+    })
+    messagesEl.appendChild(row)
+    scrollBottom()
+  }
+
+  function appendLeadForm(reason) {
+    const wrap = document.createElement('div')
+    wrap.className = 'lead-form-wrap'
+    wrap.innerHTML = `
+      <div class="lead-form" id="leadForm">
+        <div class="lead-form-title">📋 İletişim Bilgileri</div>
+        <p>${escHtml(reason)} için bilgilerinizi bırakın, 24 saat içinde ulaşalım.</p>
+        <input id="lName"  type="text"  placeholder="Adınız Soyadınız" />
+        <input id="lEmail" type="email" placeholder="E-posta adresiniz *" required />
+        <input id="lPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
+        <button class="lead-submit" onclick="submitLead('${escAttr(reason)}')">Gönder →</button>
+      </div>
+    `
+    messagesEl.appendChild(wrap)
+    scrollBottom()
+  }
+
+  async function submitLead(reason) {
+    const name  = document.getElementById('lName')?.value.trim()
+    const email = document.getElementById('lEmail')?.value.trim()
+    const phone = document.getElementById('lPhone')?.value.trim()
+
+    if (!email) {
+      alert('E-posta adresi zorunludur.')
+      return
+    }
+
+    const btn = document.querySelector('#leadForm .lead-submit')
+    btn.disabled = true
+    btn.textContent = 'Gönderiliyor...'
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, email, phone,
+          profession: currentProfession,
+          reason,
+          conversation: history
+        })
+      })
+
+      if (!res.ok) throw new Error()
+
+      // Formu kaldır ve teşekkür mesajı
+      document.getElementById('leadForm')?.closest('.lead-form-wrap')?.remove()
+      appendBotBubble(`Teşekkürler${name ? ', ' + name : ''}! Bilgileriniz alındı. Ekibimiz en geç 24 saat içinde ${email} adresinize ulaşacak. 🎯`)
+      appendButtons(['Başka bir sorunum var', 'Sohbeti bitir'])
+
+    } catch {
+      btn.disabled = false
+      btn.textContent = 'Gönder →'
+      appendBotBubble('Bir hata oluştu, lütfen tekrar deneyin.')
+    }
+  }
+
+  function disableButtons() {
+    document.querySelectorAll('.qr-btn').forEach(b => b.disabled = true)
+  }
+
+  function detectProfession(text) {
+    const meslekler = ['Diş Hekimi', 'Doktor', 'Diyetisyen', 'Fizyoterapist',
+                       'Psikolog', 'Hastane Yöneticisi', 'Hemşire', 'Podolog']
+    // Son user mesajından tespit et
+    const lastUser = [...history].reverse().find(m => m.role === 'user')
+    if (lastUser) {
+      for (const m of meslekler) {
+        if (lastUser.content.includes(m)) { currentProfession = m; break }
+      }
+    }
+  }
+
+  // ──────────────────────────────────
+  // Utils
+  // ──────────────────────────────────
+  function scrollBottom() {
+    requestAnimationFrame(() => {
+      messagesEl.scrollTop = messagesEl.scrollHeight
+    })
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/\n/g, '<br>')
+  }
+
+  function escAttr(str) {
+    return String(str).replace(/'/g, '&#39;').replace(/"/g, '&quot;')
+  }
+</script>
+</body>
+</html>
