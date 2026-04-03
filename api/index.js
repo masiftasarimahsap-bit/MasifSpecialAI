@@ -1,13 +1,6 @@
-import express from 'express'
-import cors from 'cors'
 import Anthropic from '@anthropic-ai/sdk'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
-
-const app = express()
-app.use(cors())
-app.use(express.json())
 
 let anthropic;
 try {
@@ -16,7 +9,6 @@ try {
   console.error("Anthropic Init Error:", e)
 }
 
-// Leads klasörü oluştur (Vercel Serverless environment -> /tmp)
 const leadsDir = '/tmp/leads'
 if (!fs.existsSync(leadsDir)) {
   try { fs.mkdirSync(leadsDir, { recursive: true }) } catch {}
@@ -69,96 +61,123 @@ Her yanıtı YALNIZCA bu JSON ile ver, başka hiçbir şey yazma:
 - "Yeniden Başla" seçilince ADIM 1'e dön
 - Konu dışı sorularda: 1 cümle + ["Ana Menü"] butonu`
 
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { messages } = req.body
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: 'messages array gerekli' })
-    }
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return res.json({ text: "Sistemde API Anahtarı eksik, lütfen Vercel üzerinden ANTHROPIC_API_KEY çevresel değişkenini (environment variable) ekleyin.", buttons: [], collectLead: false, leadReason: "" })
-    }
+// YARDIMCI FONKSİYON: JSON YANIT
+function sendJson(res, status, data) {
+  res.status(status).json(data);
+}
 
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages
-    })
+// VERCEL SERVERLESS HANDLER
+export default async function handler(req, res) {
+  // CORS HEADERS
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )
 
-    const raw = response.content[0].text.trim()
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
 
-    let parsed
+  // URL route parsing (accounting for vercel.json rewrites mapping everything here)
+  const urlPath = req.url.split('?')[0];
+
+  // ==========================
+  // ROUTE: /api/chat
+  // ==========================
+  if (urlPath === '/api/chat' || urlPath === '/chat') {
+    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' })
     try {
-      const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
-      parsed = JSON.parse(clean)
-    } catch {
-      parsed = {
-        text: raw,
-        buttons: [],
-        collectLead: false,
-        leadReason: ''
+      const { messages } = req.body || {}
+      if (!messages || !Array.isArray(messages)) {
+        return sendJson(res, 400, { error: 'messages array gerekli' })
       }
-    }
+      
+      if (!process.env.ANTHROPIC_API_KEY) {
+        return sendJson(res, 200, {
+          text: "Sistemde API Anahtarı bulunamadı. Lütfen Vercel Cloud panelinden ANTHROPIC_API_KEY değerini çevresel değişken (environment variable) olarak ekleyip projeyi yeniden derleyin.",
+          buttons: [],
+          collectLead: false,
+          leadReason: ""
+        })
+      }
 
-    res.json(parsed)
-  } catch (err) {
-    console.error('Chat error:', err.message)
-    res.status(500).json({ error: 'Sunucu hatası: ' + err.message })
+      const response = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages
+      })
+
+      const raw = response.content[0].text.trim()
+
+      let parsed
+      try {
+        const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
+        parsed = JSON.parse(clean)
+      } catch {
+        parsed = { text: raw, buttons: [], collectLead: false, leadReason: '' }
+      }
+
+      return sendJson(res, 200, parsed)
+    } catch (err) {
+      console.error('Chat error:', err.message)
+      return sendJson(res, 500, { error: 'Sunucu hatası: ' + err.message })
+    }
   }
-})
 
-app.post('/api/lead', (req, res) => {
-  try {
-    const { name, email, phone, profession, reason, conversation } = req.body
-    if (!email) return res.status(400).json({ error: 'E-posta zorunlu' })
+  // ==========================
+  // ROUTE: /api/lead
+  // ==========================
+  if (urlPath === '/api/lead' || urlPath === '/lead') {
+    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' })
+    try {
+      const { name, email, phone, profession, reason, conversation } = req.body || {}
+      if (!email) return sendJson(res, 400, { error: 'E-posta zorunlu' })
 
-    const lead = {
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
-      name: name || '',
-      email,
-      phone: phone || '',
-      profession: profession || '',
-      reason: reason || '',
-      conversationLength: conversation?.length || 0
+      const lead = {
+        id: Date.now(), timestamp: new Date().toISOString(),
+        name: name || '', email, phone: phone || '',
+        profession: profession || '', reason: reason || '',
+        conversationLength: conversation?.length || 0
+      }
+
+      const leadsFile = path.join(leadsDir, 'leads.json')
+      let existing = []
+      if (fs.existsSync(leadsFile)) {
+        try { existing = JSON.parse(fs.readFileSync(leadsFile, 'utf8')) } catch {}
+      }
+      existing.push(lead)
+      fs.writeFileSync(leadsFile, JSON.stringify(existing, null, 2), 'utf8')
+
+      return sendJson(res, 200, { success: true })
+    } catch (err) {
+      console.error('Lead error:', err.message)
+      return sendJson(res, 500, { error: 'Lead kaydı başarısız' })
     }
+  }
 
+  // ==========================
+  // ROUTE: /api/leads
+  // ==========================
+  if (urlPath === '/api/leads' || urlPath === '/leads') {
+    if (req.method !== 'GET') return sendJson(res, 405, { error: 'Method Not Allowed' })
     const leadsFile = path.join(leadsDir, 'leads.json')
-    let existing = []
-    if (fs.existsSync(leadsFile)) {
-      try { existing = JSON.parse(fs.readFileSync(leadsFile, 'utf8')) } catch { existing = [] }
+    if (!fs.existsSync(leadsFile)) return sendJson(res, 200, [])
+    try {
+      const data = JSON.parse(fs.readFileSync(leadsFile, 'utf8'))
+      return sendJson(res, 200, data)
+    } catch {
+      return sendJson(res, 200, [])
     }
-    existing.push(lead)
-    fs.writeFileSync(leadsFile, JSON.stringify(existing, null, 2), 'utf8')
-
-    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    console.log('📥 YENİ LEAD:')
-    console.log(`   İsim:    ${lead.name}`)
-    console.log(`   E-posta: ${lead.email}`)
-    console.log(`   Telefon: ${lead.phone}`)
-    console.log(`   Meslek:  ${lead.profession}`)
-    console.log(`   Talep:   ${lead.reason}`)
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error('Lead error:', err.message)
-    res.status(500).json({ error: 'Lead kaydı başarısız' })
   }
-})
 
-app.get('/api/leads', (req, res) => {
-  const leadsFile = path.join(leadsDir, 'leads.json')
-  if (!fs.existsSync(leadsFile)) return res.json([])
-  try {
-    const data = JSON.parse(fs.readFileSync(leadsFile, 'utf8'))
-    res.json(data)
-  } catch {
-    res.json([])
+  // PING Test Endpoint
+  if (urlPath === '/api/ping' || urlPath === '/ping') {
+    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key_status: process.env.ANTHROPIC_API_KEY ? "EXISTS" : "MISSING" })
   }
-})
 
-export default function (req, res) {
-  return app(req, res)
+  return sendJson(res, 404, { error: 'Endpoint bulunamadı 404', path: urlPath })
 }
