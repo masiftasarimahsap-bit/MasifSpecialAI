@@ -1,0 +1,1 @@
+{"version":2,"rewrites":[{"source":"/api/chat","destination":"/api/index.js"},{"source":"/api/lead","destination":"/api/index.js"},{"source":"/api/ping","destination":"/api/index.js"}]}
