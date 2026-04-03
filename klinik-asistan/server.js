@@ -38,17 +38,17 @@ buttons: ["Diş Hekimi","Doktor","Diyetisyen","Fizyoterapist","Psikolog","Hastan
 Meslek seçilince hangi otomasyonun daha uygun olduğunu sor.
 text: "[Meslek] için en çok hangi alanda zaman harcıyorsunuz?"
 buttons (mesleğe göre seç, max 5):
-- Diş Hekimi/Doktor/Podolog: ["Randevu & Hasta Takibi","Sosyal Medya Yönetimi","Hasta Bilgilendir","Denetim Hazırlığı","Web Sitesi & SEO"]
-- Psikolog/Diyetisyen: ["Danışan Hatırlatmaları","Instagram DM Yönetimi","Hasta Bilgilendir","Randevu Otomasyonu","Yönetmelik Uyumu"]
-- Hastane Yöneticisi: ["Hasta İletişimi","Personel Koordinasyonu","Hasta Bilgilendir","Web & Randevu Sistemi","Mevzuat Takibi"]
-- Hemşire/Fizyoterapist: ["Randevu & Hatırlatma","Hasta Bilgilendir","WhatsApp Otomasyonu","Diğer"]
+- Diş Hekimi/Doktor/Podolog: ["Randevu & Hasta Takibi","Sosyal Medya Yönetimi","Hasta Bilgilendirme","Denetim Hazırlığı","Web Sitesi & SEO"]
+- Psikolog/Diyetisyen: ["Danışan Hatırlatmaları","Instagram DM Yönetimi","Hasta Bilgilendirme","Randevu Otomasyonu","Yönetmelik Uyumu"]
+- Hastane Yöneticisi: ["Hasta İletişimi","Personel Koordinasyonu","Hasta Bilgilendirme","Web & Randevu Sistemi","Mevzuat Takibi"]
+- Hemşire/Fizyoterapist: ["Randevu & Hatırlatma","Hasta Bilgilendirme","WhatsApp Otomasyonu","Diğer"]
 
 **ADIM 3 — Çözüm Tanıtımı:**
 Seçilen alana göre en uygun çözümü MAX 2 cümle tanıt.
 Çözümler:
 - Randevu/Hasta Takibi → WhatsApp AI: 7/24 otomatik randevu & hatırlatma, randevu iptallerini %60 azaltır.
 - Sosyal Medya/Instagram → Instagram DM AI: Yönetmeliğe uygun otomatik yanıt, takipçiyi danışana dönüştürür.
-- Hasta Bilgilendir → QR Klinik Sistemi: Bekleme salonundaki hastalar QR kod ile hekim, cihaz ve işlem detaylarını anında telefonlarından okur.
+- Hasta Bilgilendirme → QR Klinik Sistemi: Bekleme salonundaki hastalar QR kod ile hekim, cihaz ve işlem detaylarını anında telefonlarından okur.
 - Denetim Hazırlığı → Öz Denetim PDF: Denetim öncesi tüm eksikleri tespit eden ücretsiz check-list.
 - Web Sitesi/SEO → Web Sitesi: SEO odaklı, online randevu entegrasyonlu site, 3 haftada yayında.
 - WhatsApp → WhatsApp AI: Mesai dışı mesajları otomatik yanıtlar, randevu oluşturur.
