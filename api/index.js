@@ -10,7 +10,12 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+let anthropic;
+try {
+  anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || 'MISSING_API_KEY' })
+} catch (e) {
+  console.error("Anthropic Init Error:", e)
+}
 
 // Leads klasörü oluştur (Vercel Serverless environment -> /tmp)
 const leadsDir = '/tmp/leads'
@@ -70,6 +75,9 @@ app.post('/api/chat', async (req, res) => {
     const { messages } = req.body
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'messages array gerekli' })
+    }
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.json({ text: "Sistemde API Anahtarı eksik, lütfen Vercel üzerinden ANTHROPIC_API_KEY çevresel değişkenini (environment variable) ekleyin.", buttons: [], collectLead: false, leadReason: "" })
     }
 
     const response = await anthropic.messages.create({
