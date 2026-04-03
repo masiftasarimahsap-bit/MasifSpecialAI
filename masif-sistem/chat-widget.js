@@ -5,7 +5,7 @@
 ;(function () {
   'use strict'
 
-  const API_BASE = 'http://localhost:3000'
+  const API_BASE = ''
 
   // ─────────────────────────────────────────
   // CSS
@@ -212,6 +212,8 @@
       border-radius: 14px;
       font-size: 0.855rem;
       line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
     .msk-bot-msg  .msk-bubble {
       background: rgba(255,255,255,0.04);
@@ -241,7 +243,7 @@
       font-size: 0.78rem; font-weight: 500;
       cursor: pointer;
       transition: all 0.18s;
-      white-space: nowrap;
+      white-space: normal; line-height: 1.4; text-align: left;
       position: relative; overflow: hidden;
     }
     .msk-qbtn::before {

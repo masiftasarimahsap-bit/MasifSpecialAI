@@ -6,22 +6,18 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 app.use(cors())
 app.use(express.json())
-// masif-sistem web sitesini servis et
-app.use(express.static(path.join(__dirname, '../masif-sistem')))
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-// Leads klasörü oluştur
-const leadsDir = path.join(__dirname, 'leads')
-if (!fs.existsSync(leadsDir)) fs.mkdirSync(leadsDir)
+// Leads klasörü oluştur (Vercel Serverless environment -> /tmp)
+const leadsDir = '/tmp/leads'
+if (!fs.existsSync(leadsDir)) {
+  try { fs.mkdirSync(leadsDir, { recursive: true }) } catch {}
+}
 
-// ──────────────────────────────────────────
-// SYSTEM PROMPT
-// ──────────────────────────────────────────
 const SYSTEM_PROMPT = `Sen "masif. klinik" hizmetinin AI Danışman Asistanısın. Sağlık profesyonellerine kliniğin dijital büyüme çözümlerini tanıtıyorsun.
 
 ## KİMLİĞİN
@@ -68,9 +64,6 @@ Her yanıtı YALNIZCA bu JSON ile ver, başka hiçbir şey yazma:
 - "Yeniden Başla" seçilince ADIM 1'e dön
 - Konu dışı sorularda: 1 cümle + ["Ana Menü"] butonu`
 
-// ──────────────────────────────────────────
-// CHAT ENDPOINT
-// ──────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body
@@ -87,10 +80,8 @@ app.post('/api/chat', async (req, res) => {
 
     const raw = response.content[0].text.trim()
 
-    // JSON parse dene, başarısız olursa fallback
     let parsed
     try {
-      // Bazen Claude markdown code block içinde döndürebilir
       const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
       parsed = JSON.parse(clean)
     } catch {
@@ -109,9 +100,6 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
-// ──────────────────────────────────────────
-// LEAD KAYIT ENDPOINT
-// ──────────────────────────────────────────
 app.post('/api/lead', (req, res) => {
   try {
     const { name, email, phone, profession, reason, conversation } = req.body
@@ -128,7 +116,6 @@ app.post('/api/lead', (req, res) => {
       conversationLength: conversation?.length || 0
     }
 
-    // leads/leads.json dosyasına ekle
     const leadsFile = path.join(leadsDir, 'leads.json')
     let existing = []
     if (fs.existsSync(leadsFile)) {
@@ -153,9 +140,6 @@ app.post('/api/lead', (req, res) => {
   }
 })
 
-// ──────────────────────────────────────────
-// LEADS LİSTELEME (geliştirici için)
-// ──────────────────────────────────────────
 app.get('/api/leads', (req, res) => {
   const leadsFile = path.join(leadsDir, 'leads.json')
   if (!fs.existsSync(leadsFile)) return res.json([])
@@ -167,11 +151,4 @@ app.get('/api/leads', (req, res) => {
   }
 })
 
-// ──────────────────────────────────────────
-// SERVER
-// ──────────────────────────────────────────
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log(`\n🚀 masif. klinik AI Asistanı çalışıyor`)
-  console.log(`   → http://localhost:${PORT}\n`)
-})
+export default app
