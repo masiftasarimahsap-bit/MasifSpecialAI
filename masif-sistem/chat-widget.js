@@ -5,7 +5,8 @@
 ;(function () {
   'use strict'
 
-  const API_BASE = ''
+  const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+  const API_BASE = IS_LOCAL ? 'http://localhost:3000' : '';
 
   // ─────────────────────────────────────────
   // CSS
