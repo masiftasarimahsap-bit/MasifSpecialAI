@@ -83,6 +83,9 @@ module.exports = async function handler(req, res) {
   if (urlPath === '/api/chat' || urlPath === '/chat') {
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' });
     try {
+      if (req.body && typeof req.body === 'string') {
+        try { req.body = JSON.parse(req.body); } catch(e){}
+      }
       const { messages } = req.body || {};
       if (!messages || !Array.isArray(messages)) {
         return sendJson(res, 400, { error: 'messages array gerekli' });
@@ -90,10 +93,8 @@ module.exports = async function handler(req, res) {
       
       if (!process.env.ANTHROPIC_API_KEY) {
         return sendJson(res, 200, {
-          text: "Sistemde API Anahtarı bulunamadı. Lütfen Vercel üzerinden ANTHROPIC_API_KEY ekleyin.",
-          buttons: [],
-          collectLead: false,
-          leadReason: ""
+          text: "Sistemde API Anahtarı bulunamadı. Lütfen Vercel Cloud panelinden ANTHROPIC_API_KEY ekleyin.",
+          buttons: [], collectLead: false, leadReason: ""
         });
       }
 
@@ -105,7 +106,6 @@ module.exports = async function handler(req, res) {
       });
 
       const raw = response.content[0].text.trim();
-
       let parsed;
       try {
         const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
@@ -124,6 +124,9 @@ module.exports = async function handler(req, res) {
   if (urlPath === '/api/lead' || urlPath === '/lead') {
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' });
     try {
+      if (req.body && typeof req.body === 'string') {
+        try { req.body = JSON.parse(req.body); } catch(e){}
+      }
       const { name, email, phone, profession, reason, conversation } = req.body || {};
       if (!email) return sendJson(res, 400, { error: 'E-posta zorunlu' });
 
@@ -141,10 +144,8 @@ module.exports = async function handler(req, res) {
       }
       existing.push(lead);
       fs.writeFileSync(leadsFile, JSON.stringify(existing, null, 2), 'utf8');
-
       return sendJson(res, 200, { success: true });
     } catch (err) {
-      console.error('Lead error:', err.message);
       return sendJson(res, 500, { error: 'Lead kaydı başarısız' });
     }
   }
@@ -162,7 +163,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (urlPath === '/api/ping' || urlPath === '/ping') {
-    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key_status: process.env.ANTHROPIC_API_KEY ? "EXISTS" : "MISSING" });
+    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key: process.env.ANTHROPIC_API_KEY ? "YES" : "NO" });
   }
 
   return sendJson(res, 404, { error: 'Endpoint bulunamadı 404', path: urlPath });
