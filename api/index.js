@@ -1,15 +1,15 @@
-import Anthropic from '@anthropic-ai/sdk'
-import fs from 'fs'
-import path from 'path'
+const Anthropic = require('@anthropic-ai/sdk');
+const fs = require('fs');
+const path = require('path');
 
 let anthropic;
 try {
-  anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || 'MISSING_API_KEY' })
+  anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || 'MISSING_API_KEY' });
 } catch (e) {
-  console.error("Anthropic Init Error:", e)
+  console.error("Anthropic Init Error:", e);
 }
 
-const leadsDir = '/tmp/leads'
+const leadsDir = '/tmp/leads';
 if (!fs.existsSync(leadsDir)) {
   try { fs.mkdirSync(leadsDir, { recursive: true }) } catch {}
 }
@@ -59,49 +59,42 @@ Her yanıtı YALNIZCA bu JSON ile ver, başka hiçbir şey yazma:
 - ADIM 1'de direkt meslek butonlarıyla başla (uzun karşılama yok)
 - Cevaplar MAX 2 cümle
 - "Yeniden Başla" seçilince ADIM 1'e dön
-- Konu dışı sorularda: 1 cümle + ["Ana Menü"] butonu`
+- Konu dışı sorularda: 1 cümle + ["Ana Menü"] butonu`;
 
-// YARDIMCI FONKSİYON: JSON YANIT
 function sendJson(res, status, data) {
   res.status(status).json(data);
 }
 
-// VERCEL SERVERLESS HANDLER
-export default async function handler(req, res) {
-  // CORS HEADERS
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
+  );
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end()
+    return res.status(200).end();
   }
 
-  // URL route parsing (accounting for vercel.json rewrites mapping everything here)
   const urlPath = req.url.split('?')[0];
 
-  // ==========================
-  // ROUTE: /api/chat
-  // ==========================
   if (urlPath === '/api/chat' || urlPath === '/chat') {
-    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' })
+    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' });
     try {
-      const { messages } = req.body || {}
+      const { messages } = req.body || {};
       if (!messages || !Array.isArray(messages)) {
-        return sendJson(res, 400, { error: 'messages array gerekli' })
+        return sendJson(res, 400, { error: 'messages array gerekli' });
       }
       
       if (!process.env.ANTHROPIC_API_KEY) {
         return sendJson(res, 200, {
-          text: "Sistemde API Anahtarı bulunamadı. Lütfen Vercel Cloud panelinden ANTHROPIC_API_KEY değerini çevresel değişken (environment variable) olarak ekleyip projeyi yeniden derleyin.",
+          text: "Sistemde API Anahtarı bulunamadı. Lütfen Vercel üzerinden ANTHROPIC_API_KEY ekleyin.",
           buttons: [],
           collectLead: false,
           leadReason: ""
-        })
+        });
       }
 
       const response = await anthropic.messages.create({
@@ -109,75 +102,68 @@ export default async function handler(req, res) {
         max_tokens: 1024,
         system: SYSTEM_PROMPT,
         messages
-      })
+      });
 
-      const raw = response.content[0].text.trim()
+      const raw = response.content[0].text.trim();
 
-      let parsed
+      let parsed;
       try {
-        const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
-        parsed = JSON.parse(clean)
+        const clean = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+        parsed = JSON.parse(clean);
       } catch {
-        parsed = { text: raw, buttons: [], collectLead: false, leadReason: '' }
+        parsed = { text: raw, buttons: [], collectLead: false, leadReason: '' };
       }
 
-      return sendJson(res, 200, parsed)
+      return sendJson(res, 200, parsed);
     } catch (err) {
-      console.error('Chat error:', err.message)
-      return sendJson(res, 500, { error: 'Sunucu hatası: ' + err.message })
+      console.error('Chat error:', err.message);
+      return sendJson(res, 500, { error: 'Sunucu hatası: ' + err.message });
     }
   }
 
-  // ==========================
-  // ROUTE: /api/lead
-  // ==========================
   if (urlPath === '/api/lead' || urlPath === '/lead') {
-    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' })
+    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method Not Allowed' });
     try {
-      const { name, email, phone, profession, reason, conversation } = req.body || {}
-      if (!email) return sendJson(res, 400, { error: 'E-posta zorunlu' })
+      const { name, email, phone, profession, reason, conversation } = req.body || {};
+      if (!email) return sendJson(res, 400, { error: 'E-posta zorunlu' });
 
       const lead = {
         id: Date.now(), timestamp: new Date().toISOString(),
         name: name || '', email, phone: phone || '',
         profession: profession || '', reason: reason || '',
         conversationLength: conversation?.length || 0
-      }
+      };
 
-      const leadsFile = path.join(leadsDir, 'leads.json')
-      let existing = []
+      const leadsFile = path.join(leadsDir, 'leads.json');
+      let existing = [];
       if (fs.existsSync(leadsFile)) {
         try { existing = JSON.parse(fs.readFileSync(leadsFile, 'utf8')) } catch {}
       }
-      existing.push(lead)
-      fs.writeFileSync(leadsFile, JSON.stringify(existing, null, 2), 'utf8')
+      existing.push(lead);
+      fs.writeFileSync(leadsFile, JSON.stringify(existing, null, 2), 'utf8');
 
-      return sendJson(res, 200, { success: true })
+      return sendJson(res, 200, { success: true });
     } catch (err) {
-      console.error('Lead error:', err.message)
-      return sendJson(res, 500, { error: 'Lead kaydı başarısız' })
+      console.error('Lead error:', err.message);
+      return sendJson(res, 500, { error: 'Lead kaydı başarısız' });
     }
   }
 
-  // ==========================
-  // ROUTE: /api/leads
-  // ==========================
   if (urlPath === '/api/leads' || urlPath === '/leads') {
-    if (req.method !== 'GET') return sendJson(res, 405, { error: 'Method Not Allowed' })
-    const leadsFile = path.join(leadsDir, 'leads.json')
-    if (!fs.existsSync(leadsFile)) return sendJson(res, 200, [])
+    if (req.method !== 'GET') return sendJson(res, 405, { error: 'Method Not Allowed' });
+    const leadsFile = path.join(leadsDir, 'leads.json');
+    if (!fs.existsSync(leadsFile)) return sendJson(res, 200, []);
     try {
-      const data = JSON.parse(fs.readFileSync(leadsFile, 'utf8'))
-      return sendJson(res, 200, data)
+      const data = JSON.parse(fs.readFileSync(leadsFile, 'utf8'));
+      return sendJson(res, 200, data);
     } catch {
-      return sendJson(res, 200, [])
+      return sendJson(res, 200, []);
     }
   }
 
-  // PING Test Endpoint
   if (urlPath === '/api/ping' || urlPath === '/ping') {
-    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key_status: process.env.ANTHROPIC_API_KEY ? "EXISTS" : "MISSING" })
+    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key_status: process.env.ANTHROPIC_API_KEY ? "EXISTS" : "MISSING" });
   }
 
-  return sendJson(res, 404, { error: 'Endpoint bulunamadı 404', path: urlPath })
-}
+  return sendJson(res, 404, { error: 'Endpoint bulunamadı 404', path: urlPath });
+};
