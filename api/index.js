@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import Anthropic from '@anthropic-ai/sdk'
@@ -160,4 +159,6 @@ app.get('/api/leads', (req, res) => {
   }
 })
 
-export default app
+export default function (req, res) {
+  return app(req, res)
+}
