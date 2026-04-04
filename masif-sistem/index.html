@@ -73,7 +73,7 @@
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#2563eb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🤖</div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:#f8fafc;">masif. AI Danışman</div>
+          <div style="font-size:13px;font-weight:600;color:#f8fafc;">Masif.AI</div>
           <div style="display:flex;align-items:center;gap:5px;margin-top:1px;">
             <div id="adc-status-dot" style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></div>
             <span id="adc-status-txt" style="font-size:11px;color:#94a3b8;">Çevrimiçi</span>
@@ -130,7 +130,7 @@
 #adc-send:hover{opacity:.88;transform:scale(1.05)}
 .adc-opt{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;color:#334155;font-size:12.5px;font-weight:500;padding:8px 10px;cursor:pointer;text-align:left;font-family:inherit;flex: 1 1 calc(50% - 8px); justify-content: flex-start; transition:border-color .15s,background .15s,transform .12s;box-shadow:0 1px 2px rgba(0,0,0,0.04);}
 .adc-opt:hover{border-color:#0ea5e9;background:#eff6ff;color:#0369a1;transform:translateY(-1px);}
-.adc-opt .adc-opt-icon{font-size:15px;flex-shrink:0;}
+.adc-opt .adc-opt-icon{font-size:13px;flex-shrink:0;}
 .adc-msg-in{animation:adcSlideIn .3s ease-out}
 @keyframes adcSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .adc-opts-in{animation:adcFadeIn .3s ease-out}
@@ -177,7 +177,7 @@
   function hideTyping(){var t=document.getElementById('adc-typing');if(t)t.remove();}
 
   function setOptions(buttons){
-    opts.innerHTML='';opts.style.display=(buttons&&buttons.length)?'flex':'none';
+    opts.innerHTML='';opts.style.display=(buttons&&buttons.length)?'grid':'none';opts.style.gridTemplateColumns='1fr 1fr 1fr';opts.style.gap='5px';
     if(!buttons||!buttons.length)return;
     var wrap=document.createElement('div');wrap.className='adc-opts-in';wrap.style.cssText='display:flex;flex-wrap:wrap;gap:6px;';
     buttons.forEach(function(b){
