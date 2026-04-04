@@ -105,6 +105,21 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
+// VERCEL DEPLOYMENT SUPPORT: Forward to centralized API
+app.post('/api/chat-vercel', async (req, res) => {
+  try {
+    const response = await fetch('https://masifspecial.vercel.app/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...req.body, service: 'ticaret' })
+    })
+    const data = await response.json()
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: 'API hatası' })
+  }
+})
+
 // ──────────────────────────────────────────
 // LEAD KAYIT ENDPOINT
 // ──────────────────────────────────────────

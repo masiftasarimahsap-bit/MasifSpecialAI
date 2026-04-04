@@ -502,7 +502,7 @@ async function sendToBot(inject) {
     const typingEl = appendTyping()
 
     try {
-        const res = await fetch('/api/chat', {
+        const res = await fetch('/api/chat?service=ticaret', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: chatHistory })

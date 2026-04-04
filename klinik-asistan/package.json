@@ -1,0 +1,17 @@
+{
+  "name": "klinik-asistan",
+  "version": "1.0.0",
+  "description": "masif. klinik AI Danışman Asistanı",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^4.19.2"
+  }
+}
