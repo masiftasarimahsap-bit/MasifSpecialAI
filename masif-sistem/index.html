@@ -111,7 +111,7 @@
       <h3 id="adc-lead-title" style="color:#0f172a;font-size:18px;font-weight:700;margin:0 0 4px;"></h3>
       <p style="color:#64748b;font-size:13px;margin:0 0 20px;line-height:1.5;">Sizinle en kısa sürede iletişime geçeceğiz.</p>
       <div style="display:flex;flex-direction:column;gap:9px;">
-        <input id="adc-lead-name"  type="text"  placeholder="Adınız Soyadınız"   style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;color:#1e293b;font-size:14px;padding:10px 13px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;">
+        <input id="adc-lead-name"  type="text"  placeholder="Adınız Soyadınız"   style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;color:#1e293b;font-size:14px;padding:10px 13px;outline:none;font-family:inherit;box-sizing:border-box;">
         <input id="adc-lead-email" type="email" placeholder="E-posta adresiniz *" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;color:#1e293b;font-size:14px;padding:10px 13px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;">
         <input id="adc-lead-phone" type="tel"   placeholder="Telefon numaranız"  style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;color:#1e293b;font-size:14px;padding:10px 13px;outline:none;font-family:inherit;width:100%;box-sizing:border-box;">
         <button id="adc-lead-submit" style="background:linear-gradient(135deg,#0ea5e9,#2563eb);border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:600;padding:12px;cursor:pointer;margin-top:4px;box-shadow:0 4px 14px rgba(14,165,233,0.35);">Gönder</button>
@@ -177,7 +177,7 @@
   function hideTyping(){var t=document.getElementById('adc-typing');if(t)t.remove();}
 
   function setOptions(buttons){
-    opts.innerHTML='';opts.style.display=(buttons&&buttons.length)?'grid':'none';opts.style.gridTemplateColumns='1fr 1fr 1fr';opts.style.gap='5px';
+    opts.innerHTML='';opts.style.display=(buttons&&buttons.length)?'flex':'none';opts.style.flexWrap='wrap';opts.style.gap='5px';
     if(!buttons||!buttons.length)return;
     var wrap=document.createElement('div');wrap.className='adc-opts-in';wrap.style.cssText='display:flex;flex-wrap:wrap;gap:6px;';
     buttons.forEach(function(b){
