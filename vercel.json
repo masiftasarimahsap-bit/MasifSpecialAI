@@ -1,1 +1,1 @@
-{"version":2,"rewrites":[{"source":"/api/chat","destination":"/api/index.js"},{"source":"/api/lead","destination":"/api/index.js"},{"source":"/api/ping","destination":"/api/index.js"}]}
+{"version":2,"rewrites":[{"source":"/api/chat","destination":"/api/index.js"},{"source":"/api/lead","destination":"/api/index.js"},{"source":"/api/ping","destination":"/api/index.js"},{"source":"/masif-ticaret-yeni-proje(/|$)","destination":"/masif-ticaret-yeni-proje/index.html"}],"headers":[{"source":"/(.*)?","headers":[{"key":"Cache-Control","value":"public, max-age=0, must-revalidate"}]}]}
