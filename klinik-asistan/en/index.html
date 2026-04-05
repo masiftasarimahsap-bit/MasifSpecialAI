@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>masif. klinik | AI Danışman</title>
+  <title>masif. klinik | AI Advisor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
@@ -388,12 +388,12 @@
     <div class="avatar">🏥</div>
     <div class="header-info">
       <div class="brand">masif<span>.</span> klinik</div>
-      <div class="status"><span class="status-dot"></span>AI Danışman Aktif</div>
+      <div class="status"><span class="status-dot"></span>AI Advisor Active</div>
     </div>
-    <button class="reset-btn" onclick="resetChat()">Yeni Sohbet</button>
+    <button class="reset-btn" onclick="resetChat()">New Chat</button>
     <div class="lang-switch">
-      <a href="/klinik-asistan/" class="lang-btn active">TR</a>
-      <a href="/klinik-asistan/en/" class="lang-btn">EN</a>
+      <a href="/klinik-asistan/" class="lang-btn">TR</a>
+      <a href="/klinik-asistan/en/" class="lang-btn active">EN</a>
     </div>
   </div>
 
@@ -405,12 +405,12 @@
     <textarea
       class="text-input"
       id="userInput"
-      placeholder="Mesajınızı yazın..."
+      placeholder="Type your message..."
       rows="1"
       onkeydown="handleKey(event)"
       oninput="autoResize(this)"
     ></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Gönder">
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
       ➤
     </button>
   </div>
@@ -436,16 +436,16 @@
   const sendBtn    = document.getElementById('sendBtn')
 
   // ──────────────────────────────────
-  // Init: ilk karşılama
+  // Init: First greeting
   // ──────────────────────────────────
   window.addEventListener('DOMContentLoaded', () => {
     startConversation()
   })
 
   async function startConversation() {
-    // Claude'u sıfırla ve ilk mesajı al
+    // Reset Claude and get first message
     history = []
-    await sendToBot('Merhaba, sohbeti başlat.')
+    await sendToBot('Hello, start the conversation.')
   }
 
   function resetChat() {
@@ -481,7 +481,7 @@
     isLoading = true
     sendBtn.disabled = true
 
-    // Eğer inject varsa (ilk mesaj gibi), history'e ekle
+    // If inject exists (like first message), add to history
     if (inject) {
       history.push({ role: 'user', content: inject })
     }
@@ -489,29 +489,29 @@
     const typingEl = appendTyping()
 
     try {
-      const res = await fetch('/api/chat?service=klinik&lang=tr', {
+      const res = await fetch('/api/chat?service=klinik&lang=en', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history })
       })
 
-      if (!res.ok) throw new Error('Sunucu hatası')
+      if (!res.ok) throw new Error('Server error')
       const data = await res.json()
 
       typingEl.remove()
 
-      // Bot mesajını history'e ekle
-      const rawText = data.text || 'Bir hata oluştu.'
+      // Add bot message to history
+      const rawText = data.text || 'An error occurred.'
       history.push({ role: 'assistant', content: JSON.stringify(data) })
 
-      // Mesleği yakala
+      // Detect profession
       detectProfession(rawText)
 
-      // Bubble + butonlar
+      // Bubble + buttons
       appendBotBubble(rawText)
 
       if (data.collectLead) {
-        pendingLeadReason = data.leadReason || 'Ücretsiz Danışmanlık'
+        pendingLeadReason = data.leadReason || 'Free Consultation'
         appendLeadForm(pendingLeadReason)
       } else if (data.buttons?.length) {
         appendButtons(data.buttons)
@@ -519,7 +519,7 @@
 
     } catch (err) {
       typingEl.remove()
-      appendBotBubble('Bağlantı hatası oluştu. Lütfen sayfayı yenileyin.')
+      appendBotBubble('Connection error. Please refresh the page.')
     } finally {
       isLoading = false
       sendBtn.disabled = false
@@ -583,12 +583,12 @@
     wrap.className = 'lead-form-wrap'
     wrap.innerHTML = `
       <div class="lead-form" id="leadForm">
-        <div class="lead-form-title">📋 İletişim Bilgileri</div>
-        <p>${escHtml(reason)} için bilgilerinizi bırakın, 24 saat içinde ulaşalım.</p>
-        <input id="lName"  type="text"  placeholder="Adınız Soyadınız" />
-        <input id="lEmail" type="email" placeholder="E-posta adresiniz *" required />
-        <input id="lPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
-        <button class="lead-submit" onclick="submitLead('${escAttr(reason)}')">Gönder →</button>
+        <div class="lead-form-title">📋 Contact Information</div>
+        <p>Leave your details for ${escHtml(reason)}, we'll reach out within 24 hours.</p>
+        <input id="lName"  type="text"  placeholder="Full Name" />
+        <input id="lEmail" type="email" placeholder="Your email address *" required />
+        <input id="lPhone" type="tel"   placeholder="Phone (optional)" />
+        <button class="lead-submit" onclick="submitLead('${escAttr(reason)}')">Send →</button>
       </div>
     `
     messagesEl.appendChild(wrap)
@@ -601,13 +601,13 @@
     const phone = document.getElementById('lPhone')?.value.trim()
 
     if (!email) {
-      alert('E-posta adresi zorunludur.')
+      alert('Email address is required.')
       return
     }
 
     const btn = document.querySelector('#leadForm .lead-submit')
     btn.disabled = true
-    btn.textContent = 'Gönderiliyor...'
+    btn.textContent = 'Sending...'
 
     try {
       const res = await fetch('/api/lead', {
@@ -623,15 +623,15 @@
 
       if (!res.ok) throw new Error()
 
-      // Formu kaldır ve teşekkür mesajı
+      // Remove form and show thank you message
       document.getElementById('leadForm')?.closest('.lead-form-wrap')?.remove()
-      appendBotBubble(`Teşekkürler${name ? ', ' + name : ''}! Bilgileriniz alındı. Ekibimiz en geç 24 saat içinde ${email} adresinize ulaşacak. 🎯`)
-      appendButtons(['Başka bir sorunum var', 'Sohbeti bitir'])
+      appendBotBubble(`Thank you${name ? ', ' + name : ''}! Your information has been received. Our team will reach out to your email ${email} within 24 hours. 🎯`)
+      appendButtons(['I have another question', 'End chat'])
 
     } catch {
       btn.disabled = false
-      btn.textContent = 'Gönder →'
-      appendBotBubble('Bir hata oluştu, lütfen tekrar deneyin.')
+      btn.textContent = 'Send →'
+      appendBotBubble('An error occurred, please try again.')
     }
   }
 
@@ -640,13 +640,13 @@
   }
 
   function detectProfession(text) {
-    const meslekler = ['Diş Hekimi', 'Doktor', 'Diyetisyen', 'Fizyoterapist',
-                       'Psikolog', 'Hastane Yöneticisi', 'Hemşire', 'Podolog']
-    // Son user mesajından tespit et
+    const professions = ['Dentist', 'Doctor', 'Nutritionist', 'Physiotherapist',
+                        'Psychologist', 'Hospital Administrator', 'Nurse', 'Podiatrist']
+    // Detect from last user message
     const lastUser = [...history].reverse().find(m => m.role === 'user')
     if (lastUser) {
-      for (const m of meslekler) {
-        if (lastUser.content.includes(m)) { currentProfession = m; break }
+      for (const p of professions) {
+        if (lastUser.content.includes(p)) { currentProfession = p; break }
       }
     }
   }
