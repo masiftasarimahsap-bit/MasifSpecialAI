@@ -41,7 +41,7 @@
             <span class="hero-badge anim-fade-up" style="animation-delay: 0.2s">✦ For Manufacturers ✦ Üretici & E-Ticaret Firmaları E-Commerce Businesses</span>
 
             <h1 class="hero-title anim-fade-up" style="animation-delay: 0.4s">
-                Üretimden <span class="gradient-text">Satışa</span>
+                From Production to <span class="gradient-text">Sales</span>
             </h1>
 
             <p class="hero-subtitle anim-fade-up" style="animation-delay: 0.6s">
@@ -507,7 +507,7 @@ async function sendToBot(inject) {
     const typingEl = appendTyping()
 
     try {
-        const res = await fetch('/api/chat?service=ticaret&lang=tr', {
+        const res = await fetch('/api/chat?service=ticaret&lang=en', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: chatHistory })
