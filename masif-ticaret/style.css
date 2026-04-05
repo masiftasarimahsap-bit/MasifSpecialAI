@@ -162,6 +162,41 @@ body {
     box-shadow: 0 10px 30px rgba(211, 146, 91, 0.3);
 }
 
+.lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.75rem;
+    background: rgba(211, 146, 91, 0.08);
+    border: 1px solid rgba(211, 146, 91, 0.2);
+    border-radius: 16px;
+    padding: 3px 6px;
+}
+
+.lang-btn {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: var(--font-main);
+}
+
+.lang-btn:hover {
+    color: var(--accent-color);
+    background: rgba(211, 146, 91, 0.15);
+}
+
+.lang-btn.active {
+    background: rgba(211, 146, 91, 0.25);
+    color: var(--accent-color);
+    font-weight: 600;
+    box-shadow: 0 0 8px rgba(211, 146, 91, 0.4);
+}
+
 /* ═══════════════════════════════════════════════════════════════ */
 /* HERO                                                             */
 /* ═══════════════════════════════════════════════════════════════ */
