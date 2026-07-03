@@ -394,9 +394,10 @@
                 <input id="cLName"  type="text"  placeholder="Adiniz Soyadiniz" />
                 <input id="cLEmail" type="email" placeholder="E-posta adresiniz *" required />
                 <input id="cLPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
-                <button class="chat-lead-submit" onclick="submitChatLead('${escAttr(reason)}')">Gonder</button>
+                <button class="chat-lead-submit" type="button">Gonder</button>
             </div>
         `
+        wrap.querySelector('.chat-lead-submit').addEventListener('click', () => submitChatLead(reason))
         chatMessages.appendChild(wrap)
         scrollChatBottom()
     }

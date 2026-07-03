@@ -15,7 +15,7 @@
 <!-- ═══════════════════════════════════════ NAVBAR ═══════════════════════════════════════ -->
 <nav class="navbar">
     <div class="container nav-content">
-        <a href="../masif-sistem-portal/index.html" class="nav-back">
+        <a href="../../masif-sistem-portal/index.html" class="nav-back">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -320,7 +320,7 @@
             <ul>
                 <li><a href="#hizmetler">Services</a></li>
                 <li><a href="#iletisim">Contact</a></li>
-                <li><a href="../masif-sistem-portal/index.html">Go Back</a></li>
+                <li><a href="../../masif-sistem-portal/index.html">Go Back</a></li>
             </ul>
         </div>
         <div class="footer-col">
@@ -605,9 +605,10 @@ function appendLeadForm(reason) {
             <input id="cLName"  type="text"  placeholder="Adınız Soyadınız" />
             <input id="cLEmail" type="email" placeholder="E-posta adresiniz *" required />
             <input id="cLPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
-            <button class="chat-lead-submit" onclick="submitChatLead('${escAttr(reason)}')">Gönder →</button>
+            <button class="chat-lead-submit" type="button">Gönder →</button>
         </div>
     `
+    wrap.querySelector('.chat-lead-submit').addEventListener('click', () => submitChatLead(reason))
     chatMessages.appendChild(wrap)
     scrollChatBottom()
 }

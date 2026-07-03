@@ -600,9 +600,10 @@ function appendLeadForm(reason) {
             <input id="cLName"  type="text"  placeholder="Adınız Soyadınız" />
             <input id="cLEmail" type="email" placeholder="E-posta adresiniz *" required />
             <input id="cLPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
-            <button class="chat-lead-submit" onclick="submitChatLead('${escAttr(reason)}')">Gönder →</button>
+            <button class="chat-lead-submit" type="button">Gönder →</button>
         </div>
     `
+    wrap.querySelector('.chat-lead-submit').addEventListener('click', () => submitChatLead(reason))
     chatMessages.appendChild(wrap)
     scrollChatBottom()
 }

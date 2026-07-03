@@ -205,17 +205,22 @@ function sendJson(res, status, data) {
   res.status(status).json(data);
 }
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const MAX_MESSAGES = 20;
+const MAX_CONTENT_LENGTH = 4000;
 
+function validateMessages(messages) {
+  if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES) return false;
+  return messages.every(m =>
+    m && typeof m === 'object' &&
+    (m.role === 'user' || m.role === 'assistant') &&
+    typeof m.content === 'string' &&
+    m.content.length > 0 && m.content.length <= MAX_CONTENT_LENGTH
+  );
+}
+
+module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(204).end();
   }
 
   const urlPath = req.url.split('?')[0];
@@ -227,8 +232,8 @@ module.exports = async function handler(req, res) {
         try { req.body = JSON.parse(req.body); } catch(e){}
       }
       const { messages } = req.body || {};
-      if (!messages || !Array.isArray(messages)) {
-        return sendJson(res, 400, { error: 'messages array gerekli' });
+      if (!validateMessages(messages)) {
+        return sendJson(res, 400, { error: 'Geçersiz istek: messages dizisi hatalı veya limit aşıldı' });
       }
       
       if (!process.env.ANTHROPIC_API_KEY) {
@@ -262,7 +267,7 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, parsed);
     } catch (err) {
       console.error('Chat error:', err.message);
-      return sendJson(res, 500, { error: 'Sunucu hatası: ' + err.message });
+      return sendJson(res, 500, { error: 'Sunucu hatası, lütfen tekrar deneyin.' });
     }
   }
 
@@ -297,6 +302,11 @@ module.exports = async function handler(req, res) {
 
   if (urlPath === '/api/leads' || urlPath === '/leads') {
     if (req.method !== 'GET') return sendJson(res, 405, { error: 'Method Not Allowed' });
+    const accessToken = process.env.LEADS_ACCESS_TOKEN;
+    const authHeader = req.headers['authorization'] || '';
+    if (!accessToken || authHeader !== `Bearer ${accessToken}`) {
+      return sendJson(res, 404, { error: 'Endpoint bulunamadı 404' });
+    }
     const leadsFile = path.join(leadsDir, 'leads.json');
     if (!fs.existsSync(leadsFile)) return sendJson(res, 200, []);
     try {
@@ -308,7 +318,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (urlPath === '/api/ping' || urlPath === '/ping') {
-    return sendJson(res, 200, { status: "OK", timestamp: Date.now(), key: process.env.ANTHROPIC_API_KEY ? "YES" : "NO" });
+    return sendJson(res, 200, { status: "OK", timestamp: Date.now() });
   }
 
   return sendJson(res, 404, { error: 'Endpoint bulunamadı 404', path: urlPath });

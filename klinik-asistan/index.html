@@ -421,12 +421,6 @@
   </div>
 </div>
 
-<!-- Dev panel -->
-<div class="dev-panel">
-  <span>localhost:3000</span>
-  <a href="/api/leads" target="_blank">Leads ↗</a>
-</div>
-
 <script>
   // ──────────────────────────────────
   // State
@@ -593,9 +587,10 @@
         <input id="lName"  type="text"  placeholder="Adınız Soyadınız" />
         <input id="lEmail" type="email" placeholder="E-posta adresiniz *" required />
         <input id="lPhone" type="tel"   placeholder="Telefon (opsiyonel)" />
-        <button class="lead-submit" onclick="submitLead('${escAttr(reason)}')">Gönder →</button>
+        <button class="lead-submit" type="button">Gönder →</button>
       </div>
     `
+    wrap.querySelector('.lead-submit').addEventListener('click', () => submitLead(reason))
     messagesEl.appendChild(wrap)
     scrollBottom()
   }
