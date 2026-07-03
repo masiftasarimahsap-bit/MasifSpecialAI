@@ -2,15 +2,20 @@
   "version": 2,
   "redirects": [
     { "source": "/masif-ticaret", "destination": "/masif-otomasyon/", "permanent": true },
-    { "source": "/masif-ticaret/(.*)", "destination": "/masif-otomasyon/", "permanent": true }
+    { "source": "/masif-ticaret/(.*)", "destination": "/masif-otomasyon/", "permanent": true },
+    { "source": "/masif-sistem", "destination": "/masif-otomasyon/", "permanent": false },
+    { "source": "/masif-sistem/(.*)", "destination": "/masif-otomasyon/", "permanent": false },
+    { "source": "/masif-sistem-portal", "destination": "/masif-otomasyon/", "permanent": false },
+    { "source": "/masif-sistem-portal/(.*)", "destination": "/masif-otomasyon/", "permanent": false },
+    { "source": "/klinik-asistan", "destination": "/masif-otomasyon/", "permanent": false },
+    { "source": "/klinik-asistan/(.*)", "destination": "/masif-otomasyon/", "permanent": false }
   ],
   "rewrites": [
     { "source": "/api/chat", "destination": "/api/index.js" },
     { "source": "/api/lead", "destination": "/api/index.js" },
     { "source": "/api/ping", "destination": "/api/index.js" },
     { "source": "/masif-ticaret-yeni-proje(/|$)", "destination": "/masif-ticaret-yeni-proje/index.html" },
-    { "source": "/masif-otomasyon(/|$)", "destination": "/masif-otomasyon/index.html" },
-    { "source": "/klinik-asistan/en(/|$)", "destination": "/klinik-asistan/en/index.html" }
+    { "source": "/masif-otomasyon(/|$)", "destination": "/masif-otomasyon/index.html" }
   ],
   "headers": [
     {
